@@ -1,0 +1,14 @@
+{
+  "liliumTxOperatorMnemonic": "",
+  "liliumTxOperatorMnemonicPw": "",
+  "txOperatorMnemonic": "",
+  "txOperatorMnemonicPw": "",
+  "liliumFeeAddress": "",
+  "liliumFeeNanoErg": 5000000,
+  "minTxOperatorFeeNanoErg": 1000000,
+  "minerFeeNanoErg": 1523000,
+  "nodeUrl": "http://213.239.193.208:9052",
+  "apiUrl": "https://tn-ergo-explorer.anetabtc.io",
+  "dataBaseKey": "",
+  "dataBaseURL": ""
+}
