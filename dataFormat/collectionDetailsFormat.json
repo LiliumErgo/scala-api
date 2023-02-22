@@ -1,0 +1,23 @@
+{
+  "collectionInfo": {
+    "collectionName": "COLLECTION_NAME",
+    "collectionDescription": "COLLECTION_DESCRIPTION",
+    "collectionLogoURL": "URL_TO_COLLECTION_LOGO",
+    "collectionFeaturedImageURL": "URL_TO_COLLECTION_FEATURED_IMAGE",
+    "collectionBannerImageURL": "URL_TO_COLLECTION_BANNER_IMAGE",
+    "collectionCategory": "COLLECTION_CATEGORY"
+  },
+  "socialMedia": {
+    "twitter": "TWITTER_PROFILE_URL",
+    "instagram": "INSTAGRAM_PROFILE_URL"
+  },
+  "royalty": {
+    "address1": 5,
+    "address2": 5
+  },
+  "saleStartTimestamp": 1676936502762,
+  "saleEndTimestamp": -1,
+  "mintingExpiry": -1,
+  "collectionMaxSize": 10,
+  "priceOfNFTNanoErg": 1000000,
+  "returnCollectionTokensToArtist": false
