@@ -13,8 +13,8 @@ class encoderHelper(collectionFile: Collection) {
 
   private def convertToMutableMap(
       jmap: JMap[String, String]
-  ): mutable.Map[String, String] = {
-    mutable.Map(jmap.asScala.toSeq: _*)
+  ): mutable.LinkedHashMap[String, String] = {
+    mutable.LinkedHashMap(jmap.asScala.toSeq: _*)
   }
 
   def encodeCollectionInfo: String = {

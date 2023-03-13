@@ -3,10 +3,23 @@ package AVL.IssuerBox
 import com.google.common.primitives.Longs
 import io.getblok.getblok_plasma.ByteConversion
 import org.bouncycastle.util.Strings
+import org.bouncycastle.util.encoders.Hex
+
+import scala.util.control.Breaks._
+import org.ergoplatform.appkit.{ErgoValue, Iso}
+import scorex.crypto.hash
+import sigmastate.eval.Colls
 import special.collection.Coll
+
+import scala.collection.JavaConverters._
+import scorex.crypto.hash
 import utils.MetadataTranscoder
 
+import scala.util.control.Breaks._
+import java.nio.charset.StandardCharsets
+import java.util
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 case class IssuerValue(
     metaData: (
@@ -35,7 +48,7 @@ case class IssuerValue(
         0x7e.toByte
       )
 
-//    val hexString = delimiter.map("%02x".format(_)).mkString
+    //    val hexString = delimiter.map("%02x".format(_)).mkString
 
     var traitsBytes: Array[Byte] =
       Longs.toByteArray(0L)
@@ -90,12 +103,13 @@ object IssuerValue {
       override def convertToBytes(t: IssuerValue): Array[Byte] = t.toBytes
       override def convertFromBytes(bytes: Array[Byte]): IssuerValue = {
 
-        val textualTraitsMap: mutable.Map[String, String] =
+        val textualTraitsMap: mutable.LinkedHashMap[String, String] =
           mutable.LinkedHashMap()
 
-        val levelsMap: mutable.Map[String, (Int, Int)] =
+        val levelsMap: mutable.LinkedHashMap[String, (Int, Int)] =
           mutable.LinkedHashMap()
-        val statsMap: mutable.Map[String, (Int, Int)] = mutable.LinkedHashMap()
+        val statsMap: mutable.LinkedHashMap[String, (Int, Int)] =
+          mutable.LinkedHashMap()
 
         val delimiter: Array[Byte] =
           Array[Byte](
@@ -200,9 +214,9 @@ object IssuerValue {
         val metadataTranscoder = new MetadataTranscoder
         val encoder = new metadataTranscoder.Encoder
 
-//        println(textualTraitsMap)
-//        println(levelsMap)
-//        println(statsMap)
+        //        println(textualTraitsMap)
+        //        println(levelsMap)
+        //        println(statsMap)
 
         IssuerValue(
           encoder.encodeMetaData(textualTraitsMap, levelsMap, statsMap).getValue

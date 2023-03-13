@@ -22,14 +22,14 @@ object avlUtils {
     //create AVL trees
     var index = 0
     for (res: Data <- metadataFromJson) {
-      val attributesMap = mutable.Map(
+      val attributesMap = mutable.LinkedHashMap(
         res.attributes.map(a => a.trait_type -> a.value): _*
       )
 
-      val levelsMap = mutable.Map(
+      val levelsMap = mutable.LinkedHashMap(
         res.levels.map(a => a.trait_type -> (a.value, a.max_value)): _*
       )
-      val statsMap = mutable.Map(
+      val statsMap = mutable.LinkedHashMap(
         res.stats.map(a => a.trait_type -> (a.value, a.max_value)): _*
       )
 

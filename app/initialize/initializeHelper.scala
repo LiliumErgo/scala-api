@@ -49,7 +49,8 @@ object initializeHelper {
     val encoder = new metadataTranscoder.Encoder
     val decoder = new metadataTranscoder.Decoder
 
-    val royaltyMap: mutable.Map[Address, Int] = mutable.Map()
+    val royaltyMap: mutable.LinkedHashMap[Address, Int] =
+      mutable.LinkedHashMap()
 
     collectionFromJson.royalty.asScala.foreach { case (key, value: Double) =>
       royaltyMap += (Address.create(key) -> value.round.toInt)

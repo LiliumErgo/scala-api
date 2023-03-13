@@ -1,23 +1,23 @@
 package utils
 
 import com.google.common.primitives.Longs
-import org.ergoplatform.appkit.scalaapi.ErgoValueBuilder
 import org.ergoplatform.appkit.{Address, ErgoValue, NetworkType}
+import org.ergoplatform.appkit.scalaapi.ErgoValueBuilder
 import scorex.crypto.hash
 import sigmastate.eval.Colls
 import special.collection.Coll
 
 import java.nio.charset.StandardCharsets
 import java.util
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.collection.JavaConverters._
 
 class MetadataTranscoder {
 
   class Encoder {
 
     def encodeRoyalty(
-        royaltyMap: mutable.Map[Address, Int]
+        royaltyMap: mutable.LinkedHashMap[Address, Int]
     ): ErgoValue[Coll[(Coll[java.lang.Byte], Integer)]] = {
 
       val royaltyArrayList = new util.ArrayList[(Coll[Byte], Int)]()
@@ -37,9 +37,9 @@ class MetadataTranscoder {
     }
 
     def encodeMetaData(
-        textualTraitsMap: mutable.Map[String, String],
-        levelsMap: mutable.Map[String, (Int, Int)],
-        statsMap: mutable.Map[String, (Int, Int)]
+        textualTraitsMap: mutable.LinkedHashMap[String, String],
+        levelsMap: mutable.LinkedHashMap[String, (Int, Int)],
+        statsMap: mutable.LinkedHashMap[String, (Int, Int)]
     ): ErgoValue[
       (
           Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
@@ -94,13 +94,14 @@ class MetadataTranscoder {
           Colls.fromArray(element.getBytes(StandardCharsets.UTF_8))
         )
       }
+
       ErgoValueBuilder.buildFor(
         Colls.fromArray(encodedCollectionInfoArrayList.asScala.toArray)
       )
     }
 
     def encodeSocialMedaInfo(
-        socialMediaMap: mutable.Map[String, String]
+        socialMediaMap: mutable.LinkedHashMap[String, String]
     ): ErgoValue[Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])]] = {
 
       val encodedSocialsArrayList =
@@ -127,11 +128,12 @@ class MetadataTranscoder {
     def decodeRoyalty(
         hexRoyalty: String,
         networkType: NetworkType
-    ): mutable.Map[Address, Int] = {
+    ): mutable.LinkedHashMap[Address, Int] = {
 
       val royalty =
         ErgoValue.fromHex(hexRoyalty).asInstanceOf[Coll[(Coll[Byte], Int)]]
-      val royaltyMap: mutable.Map[Address, Int] = mutable.Map()
+      val royaltyMap: mutable.LinkedHashMap[Address, Int] =
+        mutable.LinkedHashMap()
 
       for (element <- royalty.toArray) {
         val address = element._1
@@ -188,9 +190,12 @@ class MetadataTranscoder {
       val levels = metadata.getValue._2._1
       val stats = metadata.getValue._2._2
 
-      val textualTraitsMap: mutable.Map[String, String] = mutable.Map()
-      val levelsMap: mutable.Map[String, (Int, Int)] = mutable.Map()
-      val statsMap: mutable.Map[String, (Int, Int)] = mutable.Map()
+      val textualTraitsMap: mutable.LinkedHashMap[String, String] =
+        mutable.LinkedHashMap()
+      val levelsMap: mutable.LinkedHashMap[String, (Int, Int)] =
+        mutable.LinkedHashMap()
+      val statsMap: mutable.LinkedHashMap[String, (Int, Int)] =
+        mutable.LinkedHashMap()
 
       for (element <- traits.toArray) {
         val key = element._1
@@ -238,9 +243,12 @@ class MetadataTranscoder {
       val levels = metadata._2._1
       val stats = metadata._2._2
 
-      val textualTraitsMap: mutable.Map[String, String] = mutable.Map()
-      val levelsMap: mutable.Map[String, (Int, Int)] = mutable.Map()
-      val statsMap: mutable.Map[String, (Int, Int)] = mutable.Map()
+      val textualTraitsMap: mutable.LinkedHashMap[String, String] =
+        mutable.LinkedHashMap()
+      val levelsMap: mutable.LinkedHashMap[String, (Int, Int)] =
+        mutable.LinkedHashMap()
+      val statsMap: mutable.LinkedHashMap[String, (Int, Int)] =
+        mutable.LinkedHashMap()
 
       for (element <- traits.toArray) {
         val key = element._1
@@ -289,7 +297,9 @@ class MetadataTranscoder {
       collectionInfoArrayList.asScala.toArray
     }
 
-    def decodeSocialMedaInfo(hexInfo: String): mutable.Map[String, String] = {
+    def decodeSocialMedaInfo(
+        hexInfo: String
+    ): mutable.LinkedHashMap[String, String] = {
 
       val info = ErgoValue
         .fromHex(hexInfo)
@@ -298,7 +308,8 @@ class MetadataTranscoder {
         ]]
         .getValue
 
-      val socialMediaMap: mutable.Map[String, String] = mutable.Map()
+      val socialMediaMap: mutable.LinkedHashMap[String, String] =
+        mutable.LinkedHashMap()
 
       for (element <- info.toArray) {
         val key = element._1
