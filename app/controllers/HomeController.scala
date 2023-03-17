@@ -15,7 +15,8 @@ import configs.{
   collectionParser,
   conf,
   frontendRespParser,
-  masterMeta
+  masterMeta,
+  serviceOwnerConf
 }
 import initialize.{encoderHelper, initializeHelper}
 
@@ -25,12 +26,18 @@ import io.circe.Json
 import play.api.libs.circe.Circe
 import io.circe.syntax.EncoderOps
 import play.api.libs.json.JsValue
-import utils.{DataBaseError, InvalidArtistTransaction}
+import utils.{
+  DataBaseError,
+  InvalidArtistTransaction,
+  InvalidCollectionJsonFormat,
+  InvalidCollectionSize
+}
 
 import scala.concurrent.Future
 import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
+import types.{ServiceConfig, serviceConfigHelper}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -59,6 +66,20 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
 
   }
 
+  def getServiceConf: Action[AnyContent] = Action {
+
+    val serviceFilePath = "serviceOwner.json"
+    val serviceConf = serviceOwnerConf.read(serviceFilePath)
+    val serviceConfToOutput = ServiceConfig(
+      serviceConf.liliumFeeAddress,
+      serviceConf.liliumFeeNanoErg,
+      serviceConf.minerFeeNanoErg,
+      serviceConf.dataBaseURL
+    )
+    Ok(serviceConfigHelper.toJsonString(serviceConfToOutput))
+      .as("application/json")
+  }
+
   def generateCollectionIssuerHex(): Action[JsValue] = Action(parse.json) {
     request: Request[JsValue] =>
       val jsonBody: Collection =
@@ -77,6 +98,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
     request =>
       val jsonBody: FrontendFile =
         frontendRespParser.readJsonString(request.body.toString())
+
       val futureResult = Future {
         initializeHelper.main(
           jsonBody.transactionId,
@@ -106,6 +128,20 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
                 "database error, please contract support"
               ).toJsonString
             ).as("application/json")
+          case e: InvalidCollectionJsonFormat =>
+            Ok(
+              new apiResp(
+                "The collection json format seems to be invalid. Please send again with the same txid."
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidCollectionSize =>
+            Ok(
+              new apiResp(
+                "collectionMaxSize does not match the length of the nft array"
+              ).toJsonString
+            ).as("application/json")
+
           case e: Exception =>
             println(e)
             Ok(

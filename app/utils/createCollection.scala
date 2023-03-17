@@ -17,6 +17,8 @@ import scala.collection.mutable.ListBuffer
 
 class InvalidArtistTransaction(message: String) extends Exception(message)
 class DataBaseError(message: String) extends Exception(message)
+class InvalidCollectionJsonFormat(message: String) extends Exception(message)
+class InvalidCollectionSize(message: String) extends Exception(message)
 
 object createCollection {
 
@@ -126,7 +128,7 @@ object createCollection {
       ),
       priceOfNFTNanoErg,
       liliumFeeAddress,
-      liliumFeeNanoErg,
+      5000000,
       minTxOperatorFeeNanoErg,
       minerFee
     )
@@ -296,13 +298,12 @@ object createCollection {
           boxesInput(1).getValue
         ) >= 0.002 + 0.001 + convertERGLongToDouble(minerFee)
       ) {
-        if ( //lilium fee box must have correct ergoTree
-          liliumFeeAddressFromArtist.toString == liliumFeeAddress.toString && boxesInput(
-            2
-          ).getValue >= liliumFeeNanoERG
-        ) {
-          return true
-        }
+        val correctFeeAddress: Boolean =
+          liliumFeeAddressFromArtist.toString == liliumFeeAddress.toString
+        val correctFeeAmount: Boolean =
+          boxesInput(2).getValue >= (liliumFeeNanoERG * 0.95)
+
+        return correctFeeAddress && correctFeeAmount
       }
     }
     false
