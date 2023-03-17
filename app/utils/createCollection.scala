@@ -19,6 +19,7 @@ class InvalidArtistTransaction(message: String) extends Exception(message)
 class DataBaseError(message: String) extends Exception(message)
 class InvalidCollectionJsonFormat(message: String) extends Exception(message)
 class InvalidCollectionSize(message: String) extends Exception(message)
+class CoinGekoAPIError(message: String) extends Exception(message)
 
 object createCollection {
 

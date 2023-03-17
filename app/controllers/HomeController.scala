@@ -27,6 +27,7 @@ import play.api.libs.circe.Circe
 import io.circe.syntax.EncoderOps
 import play.api.libs.json.JsValue
 import utils.{
+  CoinGekoAPIError,
   DataBaseError,
   InvalidArtistTransaction,
   InvalidCollectionJsonFormat,
@@ -139,6 +140,13 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
             Ok(
               new apiResp(
                 "collectionMaxSize does not match the length of the nft array"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: CoinGekoAPIError =>
+            Ok(
+              new apiResp(
+                "coingeko api error please resubmit with the same txid"
               ).toJsonString
             ).as("application/json")
 

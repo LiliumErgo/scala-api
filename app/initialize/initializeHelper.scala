@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils
 import org.ergoplatform.appkit.{Address, BlockchainContext, Parameters}
 import utils.{
   Client,
+  CoinGekoAPIError,
   DatabaseAPI,
   DefaultNodeInfo,
   InvalidCollectionJsonFormat,
@@ -39,14 +40,18 @@ case class CoinGekoFormat(
 object initializeHelper {
 
   def getERGUSD: Double = {
-    val ERGUSD = new HttpGet(
-      s"https://api.coingecko.com/api/v3/simple/price?ids=ergo&vs_currencies=USD"
-    )
-    val client = HttpClients.custom().build()
-    val response = client.execute(ERGUSD)
-    val resp = EntityUtils.toString(response.getEntity)
-    val gson = new Gson()
-    gson.fromJson(resp, classOf[CoinGekoFormat]).ergo.usd
+    try {
+      val ERGUSD = new HttpGet(
+        s"https://api.coingecko.com/api/v3/simple/price?ids=ergo&vs_currencies=USD"
+      )
+      val client = HttpClients.custom().build()
+      val response = client.execute(ERGUSD)
+      val resp = EntityUtils.toString(response.getEntity)
+      val gson = new Gson()
+      gson.fromJson(resp, classOf[CoinGekoFormat]).ergo.usd
+    } catch {
+      case e: Exception => throw new CoinGekoAPIError("api error")
+    }
   }
 
   def calulateLiliumFee(amountNFTs: Long): Long = {
