@@ -19,6 +19,7 @@ class InvalidArtistTransaction(message: String) extends Exception(message)
 class DataBaseError(message: String) extends Exception(message)
 class InvalidCollectionJsonFormat(message: String) extends Exception(message)
 class InvalidCollectionSize(message: String) extends Exception(message)
+class InvalidNftFee(message: String) extends Exception(message)
 class CoinGekoAPIError(message: String) extends Exception(message)
 
 object createCollection {
@@ -56,6 +57,7 @@ object createCollection {
       issuerMetaDataMap: PlasmaMap[IndexKey, IssuerValue],
       priceOfNFTNanoErg: Long,
       liliumFeeAddress: Address,
+      liliumFeePercent: Long,
       liliumFeeNanoErg: Long,
       minTxOperatorFeeNanoErg: Long,
       minerFee: Long,
@@ -129,7 +131,7 @@ object createCollection {
       ),
       priceOfNFTNanoErg,
       liliumFeeAddress,
-      5000000,
+      liliumFeePercent,
       minTxOperatorFeeNanoErg,
       minerFee
     )

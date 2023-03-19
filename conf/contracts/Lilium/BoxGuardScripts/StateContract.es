@@ -23,7 +23,8 @@
    // _singletonToken: Coll[Byte]
    // _priceOfNFT: Long
    // _liliumSigmaProp: SigmaProp
-   // _liliumFee: Long
+   // _liliumFeeNum: Long
+   // _liliumFeeDenom: Long
    // _minerFee: Long
    // _txOperatorFee: Long
 
@@ -144,7 +145,7 @@
          val validLiliumBox: Boolean = {
 
             allOf(Coll(
-               (liliumBoxOUT.value == _liliumFee),
+               (liliumBoxOUT.value == (_liliumFeeNum * _priceOfNFT) / _liliumFeeDenom),
                (liliumBoxOUT.propositionBytes == _liliumSigmaProp.propBytes)
             ))
 
@@ -227,4 +228,3 @@
       sigmaProp(false)
    }
 }
-//hello

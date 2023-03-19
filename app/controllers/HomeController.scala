@@ -31,7 +31,8 @@ import utils.{
   DataBaseError,
   InvalidArtistTransaction,
   InvalidCollectionJsonFormat,
-  InvalidCollectionSize
+  InvalidCollectionSize,
+  InvalidNftFee
 }
 
 import scala.concurrent.Future
@@ -73,7 +74,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
     val serviceConf = serviceOwnerConf.read(serviceFilePath)
     val serviceConfToOutput = ServiceConfig(
       serviceConf.liliumFeeAddress,
-      serviceConf.liliumFeeNanoErg,
+      serviceConf.liliumFeePercent,
       serviceConf.minerFeeNanoErg,
       serviceConf.dataBaseURL
     )
@@ -140,6 +141,13 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
             Ok(
               new apiResp(
                 "collectionMaxSize does not match the length of the nft array"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidNftFee =>
+            Ok(
+              new apiResp(
+                "NFT price must be at least 100000000 (0.1) ERG"
               ).toJsonString
             ).as("application/json")
 

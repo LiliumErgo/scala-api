@@ -82,7 +82,7 @@ class ContractCompile(ctx: BlockchainContext) {
       singletonToken: ErgoToken,
       priceOfNFTNanoErg: Long,
       liliumFeeAddress: Address,
-      liliumFeeNanoErg: Long,
+      liliumFeePercent: Long,
       minTxOperatorFeeNanoErg: Long,
       minerFee: Long
   ): ErgoContract = {
@@ -103,7 +103,8 @@ class ContractCompile(ctx: BlockchainContext) {
         .item("_singletonToken", singletonToken.getId.getBytes)
         .item("_priceOfNFT", priceOfNFTNanoErg)
         .item("_liliumSigmaProp", liliumFeeAddress.getPublicKey)
-        .item("_liliumFee", liliumFeeNanoErg)
+        .item("_liliumFeeNum", liliumFeePercent)
+        .item("_liliumFeeDenom", 100)
         .item("_txOperatorFee", minTxOperatorFeeNanoErg)
         .item("_minerFee", minerFee)
         .build(),

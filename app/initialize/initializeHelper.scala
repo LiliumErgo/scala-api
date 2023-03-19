@@ -25,6 +25,7 @@ import utils.{
   DefaultNodeInfo,
   InvalidCollectionJsonFormat,
   InvalidCollectionSize,
+  InvalidNftFee,
   MetadataTranscoder,
   createCollection
 }
@@ -87,6 +88,11 @@ object initializeHelper {
       collectionData: Collection,
       avlData: Array[Data]
   ): (Int, String) = {
+
+    if (collectionData.priceOfNFTNanoErg < 100000000L) {
+      println(collectionData.priceOfNFTNanoErg)
+      throw new InvalidNftFee("invalid nft fee")
+    }
 
     if (!validateCollectionJson(collectionData)) {
       throw new InvalidCollectionJsonFormat("invalid format")
@@ -151,6 +157,7 @@ object initializeHelper {
       issuerTree.getMap,
       collectionFromJson.priceOfNFTNanoErg,
       Address.create(serviceConf.liliumFeeAddress),
+      serviceConf.liliumFeePercent,
       calulateLiliumFee(collectionFromJson.collectionMaxSize),
       serviceConf.minTxOperatorFeeNanoErg,
       serviceConf.minerFeeNanoErg,

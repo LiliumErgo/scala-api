@@ -6,7 +6,7 @@ import scala.io.Source
 
 case class ServiceConfig(
     liliumFeeAddress: String,
-    liliumFeeNanoErg: Long,
+    liliumFeePercent: Long,
     minerFeeNanoErg: Long,
     dataBaseURL: String
 )

@@ -95,7 +95,7 @@ case class ServiceOwnerConfig(
     txOperatorMnemonic: String,
     txOperatorMnemonicPw: String,
     liliumFeeAddress: String,
-    liliumFeeNanoErg: Long,
+    liliumFeePercent: Long,
     minTxOperatorFeeNanoErg: Long,
     minerFeeNanoErg: Long,
     nodeUrl: String,
