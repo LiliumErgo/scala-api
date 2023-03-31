@@ -68,14 +68,12 @@ class OutBoxes(ctx: BlockchainContext) {
       tokenDecimals: Int
   ): Eip4Token = {
 
-    Eip4TokenBuilder.buildNftPictureToken(
+    Eip4TokenBuilder.buildNftArtworkCollectionToken(
       inputBox.getId.toString,
       tokenAmount,
       name,
       description,
-      tokenDecimals,
-      Array(0.toByte),
-      "link"
+      tokenDecimals
     )
   }
 

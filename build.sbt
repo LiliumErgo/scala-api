@@ -26,7 +26,7 @@ resolvers ++= Seq(
 
 val SigmaStateVersion = "5.0.5"
 val ErgoContractsVersion = "1.0.0"
-val ErgoAppKitVersion = "5.0.0"
+val ErgoAppKitVersion = "5.0.1"
 val ScryptoVersion = "2.2.1"
 
 val Ergo: List[ModuleID] = List(

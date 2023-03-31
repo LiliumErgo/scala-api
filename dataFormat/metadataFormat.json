@@ -1,82 +1,110 @@
-[
-  {
-    "name": "Ergo EyeBalls Testnet #1",
-    "description": "Testnet Rules",
-    "image": "ipfs://bafybeiaply5v6kdizawowocsan3sqwbbs4z3xwhayyvqolb6trjz3zzcrq/1.png",
-    "imageSHA256": "b207faec43d6120eba770ef9b375c72d1429dd50b031d4623dddd417f2c0bd7e",
-    "dna": "15ef51f682aaf06df588beac212d2090bbc58d08cb73fcb53d127ae3096f4cb5",
-    "edition": 1,
-    "attributes": [
-      {
-        "trait_type": "Background",
-        "value": "Black"
-      },
-      {
-        "trait_type": "Eyeball",
-        "value": "White"
-      },
-      {
-        "trait_type": "Eye color",
-        "value": "Red"
-      },
-      {
-        "trait_type": "Iris",
-        "value": "Large"
-      },
-      {
-        "trait_type": "Shine",
-        "value": "Shapes"
-      },
-      {
-        "trait_type": "Bottom lid",
-        "value": "Middle"
-      },
-      {
-        "trait_type": "Top lid",
-        "value": "Middle"
-      }
-    ],
-    "levels": [],
-    "stats": []
-  },
-  {
-    "name": "Ergo EyeBalls Testnet #2",
-    "description": "Testnet Rules",
-    "image": "ipfs://bafybeiaply5v6kdizawowocsan3sqwbbs4z3xwhayyvqolb6trjz3zzcrq/2.png",
-    "imageSHA256": "520d6edddfa429e3adac7919c9852fa7229a11e46c1fac5eecf112cbd8373c9e",
-    "dna": "3065eec857e23ba2123eff136362af57d1de0485d1447d90c9c2bdd93e6784e0",
-    "edition": 2,
-    "attributes": [
-      {
-        "trait_type": "Background",
-        "value": "Pink"
-      },
-      {
-        "trait_type": "Eyeball",
-        "value": "Red"
-      },
-      {
-        "trait_type": "Eye color",
-        "value": "Pink"
-      },
-      {
-        "trait_type": "Iris",
-        "value": "Medium"
-      },
-      {
-        "trait_type": "Shine",
-        "value": "Shapes"
-      },
-      {
-        "trait_type": "Bottom lid",
-        "value": "Middle"
-      },
-      {
-        "trait_type": "Top lid",
-        "value": "Middle"
-      }
-    ],
-    "levels": [],
-    "stats": []
-  }
-]
+{
+  "name": "Ergo Eyeballs Complex 100 Test #1",
+  "description": "Testnet Rules",
+  "image": "ipfs://bafybeibhwb6wxlpftfusg3bw74duupbzcpajw7kgawixrz76ibstdw5sdu/1.png",
+  "imageSHA256": "68f17f24b7f59c2d1b4f135de9f09456199c04b86a49a161b64c65b4c5247858",
+  "dna": "80aef2911c802a7ea0ff1392daa281fad2685a8159b1b045de430678a43f047c",
+  "edition": 1,
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Eyeball",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Eye color",
+      "value": "Cyan"
+    },
+    {
+      "trait_type": "Iris",
+      "value": "Medium"
+    },
+    {
+      "trait_type": "Shine",
+      "value": "Shapes"
+    },
+    {
+      "trait_type": "Bottom lid",
+      "value": "Low"
+    },
+    {
+      "trait_type": "Top lid",
+      "value": "Middle"
+    },
+    {
+      "trait_type": "Goo",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Watermark",
+      "value": "wm1"
+    }
+  ],
+  "levels": [
+    {
+      "trait_type": "awful",
+      "max_value": "100",
+      "value": "61"
+    },
+    {
+      "trait_type": "dead",
+      "max_value": "100",
+      "value": "95"
+    },
+    {
+      "trait_type": "dead",
+      "max_value": "100",
+      "value": "40"
+    },
+    {
+      "trait_type": "womanly",
+      "max_value": "100",
+      "value": "66"
+    },
+    {
+      "trait_type": "selective",
+      "max_value": "100",
+      "value": "54"
+    },
+    {
+      "trait_type": "cooing",
+      "max_value": "100",
+      "value": "70"
+    }
+  ],
+  "stats": [
+    {
+      "trait_type": "magenta",
+      "max_value": "100",
+      "value": "76"
+    },
+    {
+      "trait_type": "efficient",
+      "max_value": "100",
+      "value": "76"
+    },
+    {
+      "trait_type": "imaginary",
+      "max_value": "100",
+      "value": "39"
+    },
+    {
+      "trait_type": "noisy",
+      "max_value": "100",
+      "value": "28"
+    },
+    {
+      "trait_type": "awful",
+      "max_value": "100",
+      "value": "80"
+    },
+    {
+      "trait_type": "powerful",
+      "max_value": "100",
+      "value": "99"
+    }
+  ]
+}
