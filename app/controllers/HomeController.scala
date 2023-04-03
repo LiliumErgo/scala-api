@@ -56,6 +56,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
       serviceConf.liliumFeeAddress,
       serviceConf.liliumFeePercent,
       serviceConf.minerFeeNanoErg,
+      serviceConf.minTxOperatorFeeNanoErg,
       serviceConf.dataBaseURL
     )
     Ok(serviceConfigHelper.toJsonString(serviceConfToOutput))
