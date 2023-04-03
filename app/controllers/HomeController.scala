@@ -4,20 +4,7 @@ import AVL.Export.AVLExportTester.issuanceTree
 import AVL.IssuerBox.IssuerHelpersAVL
 import AVL.NFT.IssuanceAVLHelpers
 import AVL.utils.avlUtils
-import configs.{
-  AVLJsonHelper,
-  Collection,
-  CollectionEncoder,
-  Data,
-  FrontendFile,
-  apiResp,
-  collectionEncoderHelper,
-  collectionParser,
-  conf,
-  frontendRespParser,
-  masterMeta,
-  serviceOwnerConf
-}
+import configs.{AVLJsonHelper, Collection, CollectionEncoder, Data, FrontendFile, apiResp, collectionEncoderHelper, collectionParser, conf, frontendRespParser, masterMeta, serviceOwnerConf}
 import initialize.{encoderHelper, initializeHelper}
 
 import javax.inject._
@@ -26,14 +13,7 @@ import io.circe.Json
 import play.api.libs.circe.Circe
 import io.circe.syntax.EncoderOps
 import play.api.libs.json.JsValue
-import utils.{
-  CoinGekoAPIError,
-  DataBaseError,
-  InvalidArtistTransaction,
-  InvalidCollectionJsonFormat,
-  InvalidCollectionSize,
-  InvalidNftFee
-}
+import utils.{CoinGekoAPIError, DataBaseError, InvalidAddress, InvalidArtistTransaction, InvalidCollectionJsonFormat, InvalidCollectionSize, InvalidMetadata, InvalidNftFee, InvalidRoyalty, InvalidTimeStamp}
 
 import scala.concurrent.Future
 import javax.inject._
@@ -155,6 +135,106 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
             Ok(
               new apiResp(
                 "coingeko api error please resubmit with the same txid"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: Exception =>
+            println(e)
+            Ok(
+              new apiResp(
+                "Oh no something went wrong, please contract support"
+              ).toJsonString
+            ).as("application/json")
+        }
+  }
+
+  def validateCollection(): Action[JsValue] = Action.async(parse.json) {
+    request =>
+      val jsonBody: FrontendFile =
+        frontendRespParser.readJsonString(request.body.toString())
+
+      val futureResult = Future {
+        initializeHelper.validate(
+          jsonBody.transactionId,
+          jsonBody.userPK,
+          jsonBody.collectionDetails,
+          jsonBody.nft
+        )
+      }
+      futureResult
+        .flatMap { res =>
+          Future.successful(Ok(
+            new apiResp(
+              "Successful"
+            ).toJsonString
+          ).as("application/json"))
+        }
+        .recover {
+          case e: InvalidArtistTransaction =>
+            Ok(
+              new apiResp(
+                "improper artist transaction submitted, please try again or contract support"
+              ).toJsonString
+            ).as("application/json")
+          case e: DataBaseError =>
+            Ok(
+              new apiResp(
+                "database error, please contract support"
+              ).toJsonString
+            ).as("application/json")
+          case e: InvalidCollectionJsonFormat =>
+            Ok(
+              new apiResp(
+                "The collection json format seems to be invalid. Please send again with the same txid."
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidCollectionSize =>
+            Ok(
+              new apiResp(
+                "collectionMaxSize does not match the length of the nft array"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidNftFee =>
+            Ok(
+              new apiResp(
+                "NFT price must be at least 100000000 (0.1) ERG"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: CoinGekoAPIError =>
+            Ok(
+              new apiResp(
+                "coingeko api error please resubmit with the same txid"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidAddress =>
+            Ok(
+              new apiResp(
+                "Inputted Address Invalid"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidTimeStamp =>
+            Ok(
+              new apiResp(
+                "Ensure that ending timestamp is greater than starting"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidRoyalty =>
+            Ok(
+              new apiResp(
+                "Ensure that royalty address are correct"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidMetadata =>
+            Ok(
+              new apiResp(
+                "Ensure that the metadata follows the proper format"
               ).toJsonString
             ).as("application/json")
 

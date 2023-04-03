@@ -21,6 +21,10 @@ class InvalidCollectionJsonFormat(message: String) extends Exception(message)
 class InvalidCollectionSize(message: String) extends Exception(message)
 class InvalidNftFee(message: String) extends Exception(message)
 class CoinGekoAPIError(message: String) extends Exception(message)
+class InvalidAddress(message: String) extends Exception(message)
+class InvalidRoyalty(message: String) extends Exception(message)
+class InvalidMetadata(message: String) extends Exception(message)
+class InvalidTimeStamp(message: String) extends Exception(message)
 
 object createCollection {
 

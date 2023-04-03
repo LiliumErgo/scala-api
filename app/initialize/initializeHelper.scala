@@ -3,35 +3,17 @@ import AVL.IssuerBox.IssuerHelpersAVL
 import AVL.NFT.IssuanceAVLHelpers
 import AVL.utils.avlUtils
 import com.google.gson.Gson
-import configs.{
-  Collection,
-  ContractsConfig,
-  Data,
-  apiResp,
-  collectionParser,
-  conf,
-  masterMeta,
-  serviceOwnerConf
-}
+import configs.{Collection, ContractsConfig, Data, apiResp, collectionParser, conf, masterMeta, serviceOwnerConf}
 import contracts.LiliumContracts
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.ergoplatform.appkit.{Address, BlockchainContext, Parameters}
-import utils.{
-  Client,
-  CoinGekoAPIError,
-  DatabaseAPI,
-  DefaultNodeInfo,
-  InvalidCollectionJsonFormat,
-  InvalidCollectionSize,
-  InvalidNftFee,
-  MetadataTranscoder,
-  createCollection
-}
+import utils.{Client, CoinGekoAPIError, DatabaseAPI, DefaultNodeInfo, InvalidAddress, InvalidCollectionJsonFormat, InvalidCollectionSize, InvalidMetadata, InvalidNftFee, InvalidRoyalty, InvalidTimeStamp, MetadataTranscoder, createCollection}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.util.control.Breaks.{break, breakable}
 
 case class Ergo(usd: Double)
 case class CoinGekoFormat(
@@ -122,8 +104,13 @@ object initializeHelper {
     val royaltyMap: mutable.LinkedHashMap[Address, Int] =
       mutable.LinkedHashMap()
 
-    collectionFromJson.royalty.asScala.foreach { case (key, value: Double) =>
-      royaltyMap += (Address.create(key) -> value.round.toInt)
+    breakable {
+      for ((key, value: Double) <- collectionFromJson.royalty.asScala) {
+        if (key == "") {
+          break
+        }
+        royaltyMap += (Address.create(key) -> value.round.toInt)
+      }
     }
 
     val encodedRoyalty =
@@ -177,6 +164,76 @@ object initializeHelper {
 
     println("Database Write Status: " + statusCode)
     (statusCode, conf.toJsonString(res))
+  }
+
+  def validate(
+            txFromArtist: String,
+            userPK: String,
+            collectionData: Collection,
+            avlData: Array[Data]
+          ): Boolean = {
+
+    if (collectionData.priceOfNFTNanoErg < 100000000L) {
+      println(collectionData.priceOfNFTNanoErg)
+      throw new InvalidNftFee("invalid nft fee")
+    }
+
+    if (!validateCollectionJson(collectionData)) {
+      throw new InvalidCollectionJsonFormat("invalid format")
+    }
+
+    if (avlData.length != collectionData.collectionMaxSize) {
+      throw new InvalidCollectionSize("invalid collection size")
+    }
+
+    val collectionFromJson = collectionData
+    val metadataTranscoder = new MetadataTranscoder
+    val encoder = new metadataTranscoder.Encoder
+    val decoder = new metadataTranscoder.Decoder
+
+    val royaltyMap: mutable.LinkedHashMap[Address, Int] =
+      mutable.LinkedHashMap()
+
+    try {
+
+      breakable {
+        for ((key, value: Double) <- collectionFromJson.royalty.asScala) {
+          if (key == "") {
+            break
+          }
+          royaltyMap += (Address.create(key) -> value.round.toInt)
+        }
+      }
+
+      val encodedRoyalty =
+        encoder.encodeRoyalty(royaltyMap)
+
+      decoder.hashRoyalty(encodedRoyalty.toHex)
+    } catch {
+      case e: Exception => throw new InvalidRoyalty("Invalid Royalty")
+    }
+
+    val issuanceTree = new IssuanceAVLHelpers
+    val issuerTree = new IssuerHelpersAVL
+
+    try {
+      avlUtils.prepareAVL(avlData, issuerTree, issuanceTree)
+    } catch {
+      case e: Exception => throw new InvalidMetadata("Invalid Metadata")
+    }
+
+    try{
+      Address.create(userPK)
+    }
+    catch {
+      case e: Exception => throw new InvalidAddress("Invalid Address Format")
+    }
+
+    if (collectionFromJson.saleEndTimestamp <= collectionFromJson.saleStartTimestamp && collectionFromJson.saleEndTimestamp != -1L){
+      throw new InvalidTimeStamp("End Timestamp needs to be greater than start Timestamp")
+    }
+
+    true
   }
 
 }

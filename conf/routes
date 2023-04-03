@@ -17,4 +17,5 @@ GET /serviceConf controllers.HomeController.getServiceConf
 POST  /postJson   controllers.HomeController.postJson()
 POST  /submitCollection   controllers.HomeController.submitCollection()
 POST /generateCollectionIssuerHex controllers.HomeController.generateCollectionIssuerHex()
+POST /validateCollection controllers.HomeController.validateCollection()
 
