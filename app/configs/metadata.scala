@@ -43,6 +43,8 @@ case class Data(
     imageSHA256: String,
     dna: String,
     edition: Int,
+    assetType: String,
+    explicit: Boolean,
     attributes: Array[Attribute],
     levels: Array[Level],
     stats: Array[Stats]

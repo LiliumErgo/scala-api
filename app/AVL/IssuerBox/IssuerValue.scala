@@ -23,18 +23,22 @@ import scala.collection.mutable.ArrayBuffer
 
 case class IssuerValue(
     metaData: (
-        Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+        java.lang.Boolean,
         (
-            Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-            Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+            Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+            (
+                Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+                Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+            )
         )
     )
 ) {
   def toBytes: Array[Byte] = {
 
-    val traits = metaData._1
-    val levels = metaData._2._1
-    val stats = metaData._2._2
+    val explicit = metaData._1
+    val traits = metaData._2._1
+    val levels = metaData._2._2._1
+    val stats = metaData._2._2._2
 
     val delimiter: Array[Byte] =
       Array[Byte](
@@ -50,8 +54,13 @@ case class IssuerValue(
 
     //    val hexString = delimiter.map("%02x".format(_)).mkString
 
-    var traitsBytes: Array[Byte] =
-      Longs.toByteArray(0L)
+    var traitsBytes: Array[Byte] = {
+      if (explicit) {
+        Longs.toByteArray(1)
+      } else {
+        Longs.toByteArray(0)
+      }
+    }
 
     for (element <- traits.toArray) {
       val key: Array[Byte] =
@@ -124,6 +133,7 @@ object IssuerValue {
           )
 
         val initialBytes = Longs.toByteArray(0L)
+        val explicit: Boolean = bytes.slice(0, initialBytes.length).exists(_ != 0.toByte)
         val data = bytes.slice(initialBytes.length, bytes.length)
 
         var index = 0
@@ -219,25 +229,29 @@ object IssuerValue {
         //        println(statsMap)
 
         IssuerValue(
-          encoder.encodeMetaData(textualTraitsMap, levelsMap, statsMap).getValue
+          encoder
+            .encodeMetaData(explicit, textualTraitsMap, levelsMap, statsMap)
+            .getValue
         )
 
       }
 
     }
   def createMetadata(
-      meta: (
-          Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+      metadata: (
+          java.lang.Boolean,
           (
-              Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-              Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+              Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+              (
+                  Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+                  Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+              )
           )
       )
   ): IssuerValue = {
-    val metaData: IssuerValue = IssuerValue(
-      meta
+    IssuerValue(
+      metadata
     )
-    metaData
   }
 
 }

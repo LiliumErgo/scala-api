@@ -37,15 +37,19 @@ class MetadataTranscoder {
     }
 
     def encodeMetaData(
+        explicit: java.lang.Boolean,
         textualTraitsMap: mutable.LinkedHashMap[String, String],
         levelsMap: mutable.LinkedHashMap[String, (Int, Int)],
         statsMap: mutable.LinkedHashMap[String, (Int, Int)]
     ): ErgoValue[
       (
-          Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+          java.lang.Boolean,
           (
-              Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-              Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+              Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+              (
+                  Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+                  Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+              )
           )
       )
     ] = {
@@ -82,7 +86,7 @@ class MetadataTranscoder {
         )
       )
 
-      ErgoValueBuilder.buildFor(cleanMeta)
+      ErgoValueBuilder.buildFor((explicit.asInstanceOf[Boolean], cleanMeta))
     }
 
     def encodeCollectionInfo(
@@ -178,17 +182,21 @@ class MetadataTranscoder {
         .fromHex(hexMetaData)
         .asInstanceOf[ErgoValue[
           (
-              Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+              java.lang.Boolean,
               (
-                  Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-                  Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+                  Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+                  (
+                      Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+                      Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+                  )
               )
           )
         ]]
 
-      val traits = metadata.getValue._1
-      val levels = metadata.getValue._2._1
-      val stats = metadata.getValue._2._2
+      val explicit: java.lang.Boolean = metadata.getValue._1
+      val traits = metadata.getValue._2._1
+      val levels = metadata.getValue._2._2._1
+      val stats = metadata.getValue._2._2._2
 
       val textualTraitsMap: mutable.LinkedHashMap[String, String] =
         mutable.LinkedHashMap()
@@ -226,22 +234,26 @@ class MetadataTranscoder {
         ) -> (value._1, value._2))
       }
 
-      Array(textualTraitsMap, levelsMap, statsMap)
+      Array(explicit, textualTraitsMap, levelsMap, statsMap)
     }
 
     def decodeMetadata(
         metadata: (
-            Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+            java.lang.Boolean,
             (
-                Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-                Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+                Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
+                (
+                    Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+                    Coll[(Coll[java.lang.Byte], (Integer, Integer))]
+                )
             )
         )
     ): Array[_] = {
 
-      val traits = metadata._1
-      val levels = metadata._2._1
-      val stats = metadata._2._2
+      val explicit: java.lang.Boolean = metadata._1
+      val traits = metadata._2._1
+      val levels = metadata._2._2._1
+      val stats = metadata._2._2._2
 
       val textualTraitsMap: mutable.LinkedHashMap[String, String] =
         mutable.LinkedHashMap()
@@ -279,9 +291,8 @@ class MetadataTranscoder {
         ) -> (value._1, value._2))
       }
 
-      Array(textualTraitsMap, levelsMap, statsMap)
+      Array(explicit, textualTraitsMap, levelsMap, statsMap)
     }
-
     def decodeCollectionInfo(hexInfo: String): Array[String] = {
       val info = ErgoValue
         .fromHex(hexInfo)

@@ -73,12 +73,21 @@
          val validIssuerBox: Boolean = {
 
             val royalty = issuerBoxOUT.R5[Coll[(Coll[Byte], Int)]].get
-            val metadata = issuerBoxOUT.R6[(Coll[(Coll[Byte],Coll[Byte])],(Coll[(Coll[Byte],(Int,Int))],Coll[(Coll[Byte],(Int,Int))]))].get
-            val traits: Coll[(Coll[Byte],Coll[Byte])] = metadata._1
-            val levels: Coll[(Coll[Byte],(Int,Int))] = metadata._2._1
-            val stats: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2
+            val metadata = issuerBoxOUT.R6[(Boolean, (Coll[(Coll[Byte],Coll[Byte])],(Coll[(Coll[Byte],(Int,Int))],Coll[(Coll[Byte],(Int,Int))])))].get
+            val explicit: Boolean = metadata._1
+            val traits: Coll[(Coll[Byte],Coll[Byte])] = metadata._2._1
+            val levels: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2._1
+            val stats: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2._2
 
-            val traitsBytes = (traits.fold(longToByteArray(0L), { (a: Coll[Byte], b: (Coll[Byte],Coll[Byte])) => a ++ longToByteArray(b._1.size.toLong) ++ b._1 ++ longToByteArray(b._2.size.toLong) ++ b._2 })) ++ delimiter
+            val startingValue = {
+                if(explicit){
+                longToByteArray(1L)
+                } else {
+                longToByteArray(0L)
+                }
+            }
+
+            val traitsBytes = (traits.fold(startingValue, { (a: Coll[Byte], b: (Coll[Byte],Coll[Byte])) => a ++ longToByteArray(b._1.size.toLong) ++ b._1 ++ longToByteArray(b._2.size.toLong) ++ b._2 })) ++ delimiter
             val levelsBytes = (levels.fold(traitsBytes, { (a: Coll[Byte], b: (Coll[Byte],(Int,Int))) => a ++ longToByteArray(b._1.size.toLong) ++ b._1 ++ longToByteArray(b._2._1.toLong) ++ longToByteArray(b._2._2.toLong) })) ++ delimiter
             val statsBytes = stats.fold(levelsBytes, { (a: Coll[Byte], b: (Coll[Byte],(Int,Int))) => a ++ longToByteArray(b._1.size.toLong) ++ b._1 ++ longToByteArray(b._2._1.toLong) ++ longToByteArray(b._2._2.toLong) })
             val royaltyBytes = royalty.fold(longToByteArray(0L), { (a: Coll[Byte], b: (Coll[Byte], Int)) => a ++ b._1 ++ longToByteArray(b._2.toLong) })

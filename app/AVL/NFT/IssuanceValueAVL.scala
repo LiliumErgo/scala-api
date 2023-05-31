@@ -4,8 +4,10 @@ import com.google.common.primitives.Longs
 import io.getblok.getblok_plasma.ByteConversion
 import org.bouncycastle.util.Strings
 import org.bouncycastle.util.encoders.Hex
+import org.ergoplatform.appkit.Iso
+import scorex.crypto.hash
 
-import java.nio.charset.StandardCharsets
+import java.nio.charset.{MalformedInputException, StandardCharsets}
 
 case class IssuanceValueAVL(
     name: String,
@@ -21,6 +23,7 @@ case class IssuanceValueAVL(
       "picture" -> Array(1.toByte, 1.toByte),
       "audio" -> Array(1.toByte, 2.toByte),
       "video" -> Array(1.toByte, 3.toByte),
+      "attachment" -> Array(1.toByte, 0x0f.toByte),
       "membership" -> Array(2.toByte, 1.toByte)
     )
 
@@ -107,10 +110,12 @@ object IssuanceValueAVL {
           _assetBytes = "audio"
         } else if (assetBytes sameElements Array(1.toByte, 3.toByte)) {
           _assetBytes = "video"
+        } else if (assetBytes sameElements Array(1.toByte, 0x0f.toByte)) {
+          _assetBytes = "attachment"
         } else if (assetBytes sameElements Array(2.toByte, 1.toByte)) {
           _assetBytes = "membership"
         } else {
-          _assetBytes = null
+          _assetBytes = "picture"
         }
 
         IssuanceValueAVL(
