@@ -14,12 +14,24 @@
       "twitter": "TWITTER_PROFILE_URL",
       "instagram": "INSTAGRAM_PROFILE_URL"
     },
-    "royalty": {
-      "3Wwc8kHEHY6cPbumS5bYHciLjEFVmGEzZQsDrexFsB7Fq7kJeLaP": 5,
-      "3WzFfpZP2uATa9foFYvFni1B4QfMfaiDBs3FpXhJEJaREL8Dcska": 5,
-      "3WwhidwuXDwLbuTuwsiVqmuz4Xp9diA2oXcuarCZJfNWuUNKRA5W": 6,
-      "3WzBhSJ1ArTxoFbN7Cf99gmUELNwH1PD1ic6QqDoEUHnnijs7nLf": 2
-    },
+    "royalty": [
+      {
+        "address": "3Wwc8kHEHY6cPbumS5bYHciLjEFVmGEzZQsDrexFsB7Fq7kJeLaP",
+        "amount": 5
+      },
+      {
+        "address": "3WzFfpZP2uATa9foFYvFni1B4QfMfaiDBs3FpXhJEJaREL8Dcska",
+        "amount": 5
+      },
+      {
+        "address": "3WwhidwuXDwLbuTuwsiVqmuz4Xp9diA2oXcuarCZJfNWuUNKRA5W",
+        "amount": 6
+      },
+      {
+        "address": "3WzBhSJ1ArTxoFbN7Cf99gmUELNwH1PD1ic6QqDoEUHnnijs7nLf",
+        "amount": 2
+      }
+    ],
     "saleStartTimestamp": 1676936502762,
     "saleEndTimestamp": 1876936502762,
     "mintingExpiry": -1,
@@ -35,6 +47,8 @@
       "imageSHA256": "b207faec43d6120eba770ef9b375c72d1429dd50b031d4623dddd417f2c0bd7e",
       "dna": "15ef51f682aaf06df588beac212d2090bbc58d08cb73fcb53d127ae3096f4cb5",
       "edition": 1,
+      "assetType": "picture",
+      "explicit": true,
       "attributes": [
         {
           "trait_type": "Background",
@@ -75,6 +89,8 @@
       "imageSHA256": "520d6edddfa429e3adac7919c9852fa7229a11e46c1fac5eecf112cbd8373c9e",
       "dna": "3065eec857e23ba2123eff136362af57d1de0485d1447d90c9c2bdd93e6784e0",
       "edition": 2,
+      "assetType": "picture",
+      "explicit": false,
       "attributes": [
         {
           "trait_type": "Background",

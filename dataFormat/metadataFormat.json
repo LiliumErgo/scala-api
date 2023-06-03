@@ -5,6 +5,8 @@
   "imageSHA256": "68f17f24b7f59c2d1b4f135de9f09456199c04b86a49a161b64c65b4c5247858",
   "dna": "80aef2911c802a7ea0ff1392daa281fad2685a8159b1b045de430678a43f047c",
   "edition": 1,
+  "assetType": "picture",
+  "explicit": true,
   "attributes": [
     {
       "trait_type": "Background",
