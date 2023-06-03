@@ -36,12 +36,13 @@ object avlUtils {
       val issuanceDataToInsert = IssuanceValueAVL.createMetadata(
         res.name,
         res.description,
-        "picture",
+        res.assetType,
         res.imageSHA256,
         res.image
       )
 
       val issuerDataToInsert = IssuerValue.createMetadata(
+        res.explicit,
         encoder
           .encodeMetaData(
             attributesMap,

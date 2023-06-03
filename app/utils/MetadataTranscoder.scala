@@ -238,7 +238,6 @@ class MetadataTranscoder {
             )
         )
     ): Array[_] = {
-
       val traits = metadata._1
       val levels = metadata._2._1
       val stats = metadata._2._2
@@ -281,7 +280,6 @@ class MetadataTranscoder {
 
       Array(textualTraitsMap, levelsMap, statsMap)
     }
-
     def decodeCollectionInfo(hexInfo: String): Array[String] = {
       val info = ErgoValue
         .fromHex(hexInfo)

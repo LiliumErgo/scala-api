@@ -3,13 +3,36 @@ import AVL.IssuerBox.IssuerHelpersAVL
 import AVL.NFT.IssuanceAVLHelpers
 import AVL.utils.avlUtils
 import com.google.gson.Gson
-import configs.{Collection, ContractsConfig, Data, apiResp, collectionParser, conf, masterMeta, serviceOwnerConf}
+import configs.{
+  Collection,
+  ContractsConfig,
+  Data,
+  apiResp,
+  collectionParser,
+  conf,
+  masterMeta,
+  serviceOwnerConf
+}
 import contracts.LiliumContracts
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.ergoplatform.appkit.{Address, BlockchainContext, Parameters}
-import utils.{Client, CoinGekoAPIError, DatabaseAPI, DefaultNodeInfo, InvalidAddress, InvalidCollectionJsonFormat, InvalidCollectionSize, InvalidMetadata, InvalidNftFee, InvalidRoyalty, InvalidTimeStamp, MetadataTranscoder, createCollection}
+import utils.{
+  Client,
+  CoinGekoAPIError,
+  DatabaseAPI,
+  DefaultNodeInfo,
+  InvalidAddress,
+  InvalidCollectionJsonFormat,
+  InvalidCollectionSize,
+  InvalidMetadata,
+  InvalidNftFee,
+  InvalidRoyalty,
+  InvalidTimeStamp,
+  MetadataTranscoder,
+  createCollection
+}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -105,11 +128,13 @@ object initializeHelper {
       mutable.LinkedHashMap()
 
     breakable {
-      for ((key, value: Double) <- collectionFromJson.royalty.asScala) {
-        if (key == "") {
+      for (entry <- collectionFromJson.royalty) {
+        if (entry.address == "" || entry.amount == 0) {
           break
         }
-        royaltyMap += (Address.create(key) -> value.round.toInt)
+        royaltyMap += (Address.create(
+          entry.address
+        ) -> entry.amount.round.toInt)
       }
     }
 
@@ -167,11 +192,11 @@ object initializeHelper {
   }
 
   def validate(
-            txFromArtist: String,
-            userPK: String,
-            collectionData: Collection,
-            avlData: Array[Data]
-          ): Boolean = {
+      txFromArtist: String,
+      userPK: String,
+      collectionData: Collection,
+      avlData: Array[Data]
+  ): Boolean = {
 
     if (collectionData.priceOfNFTNanoErg < 100000000L) {
       println(collectionData.priceOfNFTNanoErg)
@@ -197,11 +222,14 @@ object initializeHelper {
     try {
 
       breakable {
-        for ((key, value: Double) <- collectionFromJson.royalty.asScala) {
-          if (key == "") {
+        for (entry <- collectionFromJson.royalty) {
+
+          if (entry.address == "" || entry.amount == 0) {
             break
           }
-          royaltyMap += (Address.create(key) -> value.round.toInt)
+          royaltyMap += (Address.create(
+            entry.address
+          ) -> entry.amount.round.toInt)
         }
       }
 
@@ -210,7 +238,8 @@ object initializeHelper {
 
       decoder.hashRoyalty(encodedRoyalty.toHex)
     } catch {
-      case e: Exception => throw new InvalidRoyalty("Invalid Royalty")
+      case e: Exception =>
+        throw new InvalidRoyalty("Invalid Royalty")
     }
 
     val issuanceTree = new IssuanceAVLHelpers
@@ -222,15 +251,18 @@ object initializeHelper {
       case e: Exception => throw new InvalidMetadata("Invalid Metadata")
     }
 
-    try{
+    try {
       Address.create(userPK)
-    }
-    catch {
+    } catch {
       case e: Exception => throw new InvalidAddress("Invalid Address Format")
     }
 
-    if (collectionFromJson.saleEndTimestamp <= collectionFromJson.saleStartTimestamp && collectionFromJson.saleEndTimestamp != -1L){
-      throw new InvalidTimeStamp("End Timestamp needs to be greater than start Timestamp")
+    if (
+      collectionFromJson.saleEndTimestamp <= collectionFromJson.saleStartTimestamp && collectionFromJson.saleEndTimestamp != -1L
+    ) {
+      throw new InvalidTimeStamp(
+        "End Timestamp needs to be greater than start Timestamp"
+      )
     }
 
     true

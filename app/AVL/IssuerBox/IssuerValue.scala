@@ -22,6 +22,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 case class IssuerValue(
+    explicit: Boolean,
     metaData: (
         Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
         (
@@ -31,7 +32,6 @@ case class IssuerValue(
     )
 ) {
   def toBytes: Array[Byte] = {
-
     val traits = metaData._1
     val levels = metaData._2._1
     val stats = metaData._2._2
@@ -50,8 +50,13 @@ case class IssuerValue(
 
     //    val hexString = delimiter.map("%02x".format(_)).mkString
 
-    var traitsBytes: Array[Byte] =
-      Longs.toByteArray(0L)
+    var traitsBytes: Array[Byte] = {
+      if (explicit) {
+        Longs.toByteArray(1)
+      } else {
+        Longs.toByteArray(0)
+      }
+    }
 
     for (element <- traits.toArray) {
       val key: Array[Byte] =
@@ -124,6 +129,8 @@ object IssuerValue {
           )
 
         val initialBytes = Longs.toByteArray(0L)
+        val explicit: Boolean =
+          bytes.slice(0, initialBytes.length).exists(_ != 0.toByte)
         val data = bytes.slice(initialBytes.length, bytes.length)
 
         var index = 0
@@ -219,14 +226,18 @@ object IssuerValue {
         //        println(statsMap)
 
         IssuerValue(
-          encoder.encodeMetaData(textualTraitsMap, levelsMap, statsMap).getValue
+          explicit,
+          encoder
+            .encodeMetaData(textualTraitsMap, levelsMap, statsMap)
+            .getValue
         )
 
       }
 
     }
   def createMetadata(
-      meta: (
+      explicit: Boolean,
+      metadata: (
           Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
           (
               Coll[(Coll[java.lang.Byte], (Integer, Integer))],
@@ -234,10 +245,10 @@ object IssuerValue {
           )
       )
   ): IssuerValue = {
-    val metaData: IssuerValue = IssuerValue(
-      meta
+    IssuerValue(
+      explicit,
+      metadata
     )
-    metaData
   }
 
 }
