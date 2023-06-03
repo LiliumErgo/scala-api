@@ -58,7 +58,7 @@ case class Stats(trait_type: String, max_value: Int, value: Int)
 case class Collection(
     collectionInfo: CollectionInfo,
     socialMedia: java.util.Map[String, String],
-    royalty: java.util.Map[String, Double],
+    royalty: Array[Royalty],
     saleStartTimestamp: Long,
     saleEndTimestamp: Long,
     mintingExpiry: Long,
@@ -76,7 +76,7 @@ case class CollectionInfo(
     collectionCategory: String
 )
 
-case class SocialMediaEntry(name: String, url: String)
+case class Royalty(address: String, amount: Double)
 
 //class metadata(
 //    name: String,
