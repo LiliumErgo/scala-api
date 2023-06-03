@@ -73,17 +73,18 @@
          val validIssuerBox: Boolean = {
 
             val royalty = issuerBoxOUT.R5[Coll[(Coll[Byte], Int)]].get
-            val metadata = issuerBoxOUT.R6[(Boolean, (Coll[(Coll[Byte],Coll[Byte])],(Coll[(Coll[Byte],(Int,Int))],Coll[(Coll[Byte],(Int,Int))])))].get
-            val explicit: Boolean = metadata._1
-            val traits: Coll[(Coll[Byte],Coll[Byte])] = metadata._2._1
-            val levels: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2._1
-            val stats: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2._2
+            val metadata = issuerBoxOUT.R6[(Coll[(Coll[Byte],Coll[Byte])],(Coll[(Coll[Byte],(Int,Int))],Coll[(Coll[Byte],(Int,Int))]))].get
+            val additionalInfo = issuerBoxOUT.R8[Coll[(Coll[Byte], Coll[Byte])]].get
+            val explicit: Coll[Byte] = additionalInfo(0)._2
+            val traits: Coll[(Coll[Byte],Coll[Byte])] = metadata._1
+            val levels: Coll[(Coll[Byte],(Int,Int))] = metadata._2._1
+            val stats: Coll[(Coll[Byte],(Int,Int))] = metadata._2._2
 
             val startingValue = {
-                if(explicit){
-                longToByteArray(1L)
-                } else {
+                if(explicit(0) == 0){
                 longToByteArray(0L)
+                } else {
+                longToByteArray(1L)
                 }
             }
 
