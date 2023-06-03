@@ -22,23 +22,19 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 case class IssuerValue(
+    explicit: Boolean,
     metaData: (
-        java.lang.Boolean,
+        Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
         (
-            Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
-            (
-                Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-                Coll[(Coll[java.lang.Byte], (Integer, Integer))]
-            )
+            Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+            Coll[(Coll[java.lang.Byte], (Integer, Integer))]
         )
     )
 ) {
   def toBytes: Array[Byte] = {
-
-    val explicit = metaData._1
-    val traits = metaData._2._1
-    val levels = metaData._2._2._1
-    val stats = metaData._2._2._2
+    val traits = metaData._1
+    val levels = metaData._2._1
+    val stats = metaData._2._2
 
     val delimiter: Array[Byte] =
       Array[Byte](
@@ -133,7 +129,8 @@ object IssuerValue {
           )
 
         val initialBytes = Longs.toByteArray(0L)
-        val explicit: Boolean = bytes.slice(0, initialBytes.length).exists(_ != 0.toByte)
+        val explicit: Boolean =
+          bytes.slice(0, initialBytes.length).exists(_ != 0.toByte)
         val data = bytes.slice(initialBytes.length, bytes.length)
 
         var index = 0
@@ -229,8 +226,9 @@ object IssuerValue {
         //        println(statsMap)
 
         IssuerValue(
+          explicit,
           encoder
-            .encodeMetaData(explicit, textualTraitsMap, levelsMap, statsMap)
+            .encodeMetaData(textualTraitsMap, levelsMap, statsMap)
             .getValue
         )
 
@@ -238,18 +236,17 @@ object IssuerValue {
 
     }
   def createMetadata(
+      explicit: Boolean,
       metadata: (
-          java.lang.Boolean,
+          Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
           (
-              Coll[(Coll[java.lang.Byte], Coll[java.lang.Byte])],
-              (
-                  Coll[(Coll[java.lang.Byte], (Integer, Integer))],
-                  Coll[(Coll[java.lang.Byte], (Integer, Integer))]
-              )
+              Coll[(Coll[java.lang.Byte], (Integer, Integer))],
+              Coll[(Coll[java.lang.Byte], (Integer, Integer))]
           )
       )
   ): IssuerValue = {
     IssuerValue(
+      explicit,
       metadata
     )
   }
