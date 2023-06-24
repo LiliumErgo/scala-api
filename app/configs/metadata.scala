@@ -64,7 +64,18 @@ case class Collection(
     mintingExpiry: Long,
     collectionMaxSize: Long,
     priceOfNFTNanoErg: Long,
-    returnCollectionTokensToArtist: Boolean
+    paymentTokenAmount: Double,
+    paymentTokenID: String,
+    returnCollectionTokensToArtist: Boolean,
+    whitelistAccepted: Boolean,
+    whitelistBypass: Boolean,
+    premintAccepted: Boolean,
+    paymentTokenAccepted: Boolean,
+    ergAccepted: Boolean,
+    whitelistTokenAmount: Long,
+    premintTokenAmount: Long,
+    usePool: Boolean,
+    amountLP: Long
 )
 
 case class CollectionInfo(
@@ -165,6 +176,25 @@ object collectionParser {
   def readJsonString(jsonString: String): Collection = {
     gson
       .fromJson(jsonString, classOf[Collection])
+  }
+
+}
+
+object SignedTransactionJsonParser {
+  private val gson = new Gson()
+
+  def read(filePath: String): SignedTransactionJson = {
+    val jsonString: String = Source.fromFile(filePath).mkString
+    gson.fromJson(jsonString, classOf[SignedTransactionJson])
+  }
+
+  def readJsonString(jsonString: String): SignedTransactionJson = {
+    gson
+      .fromJson(jsonString, classOf[SignedTransactionJson])
+  }
+
+  def toJsonString(json: SignedTransactionJson): String = {
+    this.gson.toJson(json)
   }
 
 }
