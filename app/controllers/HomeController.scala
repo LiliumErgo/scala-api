@@ -4,8 +4,23 @@ import AVL.Export.AVLExportTester.issuanceTree
 import AVL.IssuerBox.IssuerHelpersAVL
 import AVL.NFT.IssuanceAVLHelpers
 import AVL.utils.avlUtils
-import configs.{AVLJsonHelper, Collection, CollectionEncoder, Data, FrontendFile, apiResp, collectionEncoderHelper, collectionParser, conf, frontendRespParser, masterMeta, serviceOwnerConf}
-import initialize.{encoderHelper, initializeHelper}
+import configs.{
+  AVLJsonHelper,
+  Collection,
+  CollectionEncoder,
+  Data,
+  FrontendFile,
+  SignedTransactionJson,
+  SignedTransactionJsonParser,
+  apiResp,
+  collectionEncoderHelper,
+  collectionParser,
+  conf,
+  frontendRespParser,
+  masterMeta,
+  serviceOwnerConf
+}
+import initialize.{InitializeHelper, encoderHelper}
 
 import javax.inject._
 import play.api.mvc._
@@ -13,7 +28,24 @@ import io.circe.Json
 import play.api.libs.circe.Circe
 import io.circe.syntax.EncoderOps
 import play.api.libs.json.JsValue
-import utils.{CoinGekoAPIError, DataBaseError, InvalidAddress, InvalidArtistTransaction, InvalidCollectionJsonFormat, InvalidCollectionSize, InvalidMetadata, InvalidNftFee, InvalidRoyalty, InvalidTimeStamp}
+import utils.{
+  ArtistTxError,
+  CoinGekoAPIError,
+  DataBaseError,
+  InvalidAddress,
+  InvalidArtistTransaction,
+  InvalidCollectionJsonFormat,
+  InvalidCollectionSize,
+  InvalidMetadata,
+  InvalidNftFee,
+  InvalidPaymentToken,
+  InvalidPremintSetting,
+  InvalidRoyalty,
+  InvalidTimeStamp,
+  InvalidTransactionB64,
+  InvalidWhitelistSetting,
+  explorerApi
+}
 
 import scala.concurrent.Future
 import javax.inject._
@@ -55,6 +87,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
     val serviceConfToOutput = ServiceConfig(
       serviceConf.liliumFeeAddress,
       serviceConf.liliumFeePercent,
+      serviceConf.extraFeaturePercent,
       serviceConf.minerFeeNanoErg,
       serviceConf.minTxOperatorFeeNanoErg,
       serviceConf.dataBaseURL
@@ -77,13 +110,26 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
       Ok(collectionEncoderHelper.toJsonString(response)).as("application/json")
   }
 
+  def submitSignedTransaction(): Action[JsValue] = Action(parse.json) {
+    request: Request[JsValue] =>
+      val exp = new explorerApi()
+
+      val response = exp.sendTx(request.body.toString())
+
+      Ok(
+        new apiResp(
+          response
+        ).toJsonString
+      ).as("application/json")
+  }
+
   def submitCollection(): Action[JsValue] = Action.async(parse.json) {
     request =>
       val jsonBody: FrontendFile =
         frontendRespParser.readJsonString(request.body.toString())
 
       val futureResult = Future {
-        initializeHelper.main(
+        InitializeHelper.main(
           jsonBody.transactionId,
           jsonBody.userPK,
           jsonBody.collectionDetails,
@@ -100,50 +146,111 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
         }
         .recover {
           case e: InvalidArtistTransaction =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "improper artist transaction submitted, please try again or contract support"
               ).toJsonString
             ).as("application/json")
           case e: DataBaseError =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "database error, please contract support"
               ).toJsonString
             ).as("application/json")
           case e: InvalidCollectionJsonFormat =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "The collection json format seems to be invalid. Please send again with the same txid."
+                "The collection json format seems to be invalid. Please try again"
               ).toJsonString
             ).as("application/json")
-
-          case e: InvalidCollectionSize =>
-            Ok(
+          case e: InvalidTransactionB64 =>
+            BadRequest(
               new apiResp(
-                "collectionMaxSize does not match the length of the nft array"
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+          case e: InvalidCollectionSize =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidNftFee =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "NFT price must be at least 100000000 (0.1) ERG"
+                e.getMessage
               ).toJsonString
             ).as("application/json")
 
           case e: CoinGekoAPIError =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "coingeko api error please resubmit with the same txid"
+                "coingeko api error please try again in a few minutes"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidAddress =>
+            BadRequest(
+              new apiResp(
+                "Inputted Address Invalid"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidTimeStamp =>
+            BadRequest(
+              new apiResp(
+                "Ensure that ending timestamp is greater than starting"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidRoyalty =>
+            BadRequest(
+              new apiResp(
+                "Ensure that royalty address are correct"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidMetadata =>
+            BadRequest(
+              new apiResp(
+                "Ensure that the metadata follows the proper format"
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidPremintSetting =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidWhitelistSetting =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidPaymentToken =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
+          case e: ArtistTxError =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
               ).toJsonString
             ).as("application/json")
 
           case e: Exception =>
             println(e)
-            Ok(
+            BadRequest(
               new apiResp(
-                "Oh no something went wrong, please contract support"
+                "Something went wrong, please contract support"
               ).toJsonString
             ).as("application/json")
         }
@@ -155,7 +262,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
         frontendRespParser.readJsonString(request.body.toString())
 
       val futureResult = Future {
-        initializeHelper.validate(
+        InitializeHelper.validate(
           jsonBody.transactionId,
           jsonBody.userPK,
           jsonBody.collectionDetails,
@@ -164,84 +271,107 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
       }
       futureResult
         .flatMap { res =>
-          Future.successful(Ok(
-            new apiResp(
-              "Successful"
-            ).toJsonString
-          ).as("application/json"))
+          Future.successful(
+            Ok(
+              new apiResp(
+                "Successful"
+              ).toJsonString
+            ).as("application/json")
+          )
         }
         .recover {
           case e: InvalidArtistTransaction =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "improper artist transaction submitted, please try again or contract support"
               ).toJsonString
             ).as("application/json")
           case e: DataBaseError =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "database error, please contract support"
               ).toJsonString
             ).as("application/json")
           case e: InvalidCollectionJsonFormat =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "The collection json format seems to be invalid. Please send again with the same txid."
+                "The collection json format invalid"
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidCollectionSize =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "collectionMaxSize does not match the length of the nft array"
+                e.getMessage
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidNftFee =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "NFT price must be at least 100000000 (0.1) ERG"
+                e.getMessage
               ).toJsonString
             ).as("application/json")
 
           case e: CoinGekoAPIError =>
-            Ok(
+            BadRequest(
               new apiResp(
-                "coingeko api error please resubmit with the same txid"
+                "coingeko api error please try again in a few minutes"
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidAddress =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "Inputted Address Invalid"
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidTimeStamp =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "Ensure that ending timestamp is greater than starting"
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidRoyalty =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "Ensure that royalty address are correct"
               ).toJsonString
             ).as("application/json")
 
           case e: InvalidMetadata =>
-            Ok(
+            BadRequest(
               new apiResp(
                 "Ensure that the metadata follows the proper format"
               ).toJsonString
             ).as("application/json")
 
+          case e: InvalidPremintSetting =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidWhitelistSetting =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
+          case e: InvalidPaymentToken =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
+              ).toJsonString
+            ).as("application/json")
+
           case e: Exception =>
             println(e)
-            Ok(
+            BadRequest(
               new apiResp(
                 "Oh no something went wrong, please contract support"
               ).toJsonString
