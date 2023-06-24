@@ -2,23 +2,30 @@ package utils
 
 import configs.serviceOwnerConf
 import explorer.Explorer
+import org.apache.http.{HttpHeaders, HttpStatus, NameValuePair}
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.{ContentType, StringEntity}
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicNameValuePair
 import org.ergoplatform.ErgoBox
 import org.ergoplatform.appkit.{ErgoToken, InputBox}
 import org.ergoplatform.appkit.impl.{InputBoxImpl, ScalaBridge}
 import org.ergoplatform.explorer.client.model.{
   InputInfo,
   OutputInfo,
+  TokenInfo,
   TransactionInfo
 }
 import org.ergoplatform.explorer.client.{DefaultApi, ExplorerApiClient}
 import org.ergoplatform.restapi.client._
 
+import java.io.{BufferedReader, InputStreamReader}
 import java.util
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 class explorerApi(
-    apiUrl: String,
+    apiUrl: String = serviceOwnerConf.read("serviceOwner.json").apiUrl,
     nodeUrl: String = serviceOwnerConf.read("serviceOwner.json").nodeUrl
 ) extends Explorer(
       nodeInfo = DefaultNodeInfo(
@@ -62,6 +69,53 @@ class explorerApi(
   def getBoxesfromTransaction(txId: String): TransactionInfo = {
     val api = this.getExplorerApi(this.apiUrl)
     api.getApiV1TransactionsP1(txId).execute().body()
+  }
+
+  def sendTx(
+      tx: String
+  ): String = {
+    val requestEntity = new StringEntity(
+      tx,
+      ContentType.APPLICATION_JSON
+    )
+    val post = new HttpPost(
+      s"${this.nodeUrl}/transactions"
+    )
+
+    val nameValuePairs = new util.ArrayList[NameValuePair]()
+
+    nameValuePairs.add(new BasicNameValuePair("JSON", tx))
+    post.setEntity(requestEntity)
+    post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+    val client = HttpClients.custom().build()
+    val response = client.execute(post)
+
+    if (response.getStatusLine.getStatusCode == HttpStatus.SC_OK) {
+      val entity = response.getEntity
+      if (entity != null) {
+        val content = new BufferedReader(
+          new InputStreamReader(entity.getContent)
+        )
+        val responseBody = Iterator
+          .continually(content.readLine())
+          .takeWhile(_ != null)
+          .mkString("\n")
+        content.close() // Close the content stream to release its resources
+        responseBody.replace("\"", "")
+      } else {
+        throw new RuntimeException("No response body received")
+      }
+    } else {
+      throw new RuntimeException(
+        s"Request failed with status code: ${response.getStatusLine.getStatusCode}"
+      )
+    }
+
+  }
+
+  def getTokenInfo(tokenID: String): TokenInfo = {
+    val api = this.getExplorerApi(this.apiUrl)
+    api.getApiV1TokensP1(tokenID).execute().body()
   }
 
   def getAddressInfo(address: String): util.List[OutputInfo] = {
