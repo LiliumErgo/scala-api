@@ -21,7 +21,6 @@ import org.ergoplatform.appkit.{Address, BlockchainContext, Parameters}
 import utils.{
   Client,
   CoinGekoAPIError,
-  ContractCompile,
   DatabaseAPI,
   DefaultNodeInfo,
   InvalidAddress,
@@ -38,7 +37,6 @@ import utils.{
   InvalidWhitelistSetting,
   MetadataTranscoder,
   SpectrumAPI,
-  TransactionHelper,
   createCollection,
   explorerApi
 }
@@ -317,11 +315,9 @@ object InitializeHelper {
       val extraFeatureFee = serviceConf.extraFeaturePercent / 100.0
       var percent = 1.0
       percent += (if (collectionData.usePool) extraFeatureFee else 0.0)
-      percent += (if (collectionData.whitelistAccepted) extraFeatureFee
-                  else 0.0)
+      percent += (if (collectionData.whitelistAccepted) extraFeatureFee else 0.0)
       percent += (if (collectionData.premintAccepted) extraFeatureFee else 0.0)
-      percent += (if (collectionData.paymentTokenAccepted) extraFeatureFee
-                  else 0.0)
+      percent += (if (collectionData.paymentTokenAccepted) extraFeatureFee else 0.0)
       percent
     }
 
@@ -541,67 +537,6 @@ object InitializeHelper {
     }
 
     true
-  }
-
-  def getContracts: types.ContractErgoTree = {
-    val client: Client = new Client()
-    client.setClient
-    val ctx: BlockchainContext = client.getContext
-
-    val serviceFilePath = "serviceOwner.json"
-    val serviceConf = serviceOwnerConf.read(serviceFilePath)
-    val txHelper = new TransactionHelper(
-      ctx,
-      serviceConf.liliumTxOperatorMnemonic,
-      serviceConf.liliumTxOperatorMnemonicPw
-    )
-
-    val compilerObj = new ContractCompile(ctx)
-    val minerFee: Long = serviceConf.minerFeeNanoErg
-    val operator: Address = txHelper.senderAddress
-
-    val singletonIssuerContractUsePool =
-      compilerObj.compileSingletonIssuerContract(
-        LiliumContracts.SingletonIssuer.contractScript,
-        operator,
-        usePool = true,
-        minerFee
-      )
-    val singletonIssuerContractNoPool =
-      compilerObj.compileSingletonIssuerContract(
-        LiliumContracts.SingletonIssuer.contractScript,
-        operator,
-        usePool = false,
-        minerFee
-      )
-
-    val collectionIssuerContract = compilerObj.compileCollectionIssuerContract(
-      LiliumContracts.CollectionIssuer.contractScript,
-      operator
-    )
-    val preMintIssuerContract = compilerObj.compilePreMintIssuerContract(
-      LiliumContracts.PreMintIssuer.contractScript,
-      operator
-    )
-    val whitelistIssuerContract = compilerObj.compileWhitelistIssuerContract(
-      LiliumContracts.WhitelistIssuer.contractScript,
-      operator
-    )
-    val proxyContract = compilerObj.compileProxyContract(
-      LiliumContracts.ProxyContract.contractScript,
-      minerFee
-    )
-
-    types.ContractErgoTree(
-      singletonIssuerContractUsePool.getErgoTree.bytesHex,
-      singletonIssuerContractNoPool.getErgoTree.bytesHex,
-      collectionIssuerContract.getErgoTree.bytesHex,
-      preMintIssuerContract.getErgoTree.bytesHex,
-      whitelistIssuerContract.getErgoTree.bytesHex,
-      proxyContract.getErgoTree.bytesHex,
-      minerFee
-    )
-
   }
 
 }
