@@ -51,7 +51,7 @@ import scala.concurrent.Future
 import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
-import types.{ServiceConfig, serviceConfigHelper}
+import types.{ServiceConfig, contractErgoTreeHelper, serviceConfigHelper}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -62,6 +62,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject() (cc: ControllerComponents)(implicit
     ec: ExecutionContext
 ) extends AbstractController(cc) {
+
+  private lazy val contracts: types.ContractErgoTree =
+    InitializeHelper.getContracts
 
   /** Create an Action to render an HTML page with a welcome message.
     * The configuration in the `routes` file means that this method
@@ -94,6 +97,10 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
     )
     Ok(serviceConfigHelper.toJsonString(serviceConfToOutput))
       .as("application/json")
+  }
+
+  def getContracts: Action[AnyContent] = Action {
+    Ok(contractErgoTreeHelper.toJsonString(contracts)).as("application/json")
   }
 
   def generateCollectionIssuerHex(): Action[JsValue] = Action(parse.json) {
