@@ -8,6 +8,7 @@ case class ServiceConfig(
     liliumFeeAddress: String,
     liliumFeePercent: Long,
     extraFeaturePercent: Long,
+    minBoxValueNanoErg: Long,
     minerFeeNanoErg: Long,
     minTxOperatorFeeNanoErg: Long,
     dataBaseURL: String

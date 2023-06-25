@@ -91,6 +91,7 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
       serviceConf.liliumFeeAddress,
       serviceConf.liliumFeePercent,
       serviceConf.extraFeaturePercent,
+      serviceConf.minBoxValueNanoErg,
       serviceConf.minerFeeNanoErg,
       serviceConf.minTxOperatorFeeNanoErg,
       serviceConf.dataBaseURL
