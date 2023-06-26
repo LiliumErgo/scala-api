@@ -23,6 +23,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class InvalidArtistTransaction(message: String) extends Exception(message)
+class TxSubmissionError(message: String) extends Exception(message)
 class DataBaseError(message: String) extends Exception(message)
 class InvalidCollectionJsonFormat(message: String) extends Exception(message)
 class InvalidTransactionB64(message: String) extends Exception(message)
@@ -181,10 +182,13 @@ object createCollection {
     whitelistToken = null
 
     val txIdFromArtist = {
-      try{
+      try {
         exp.sendTx(transactionFromArtist)
       } catch {
-        case e: Exception => throw new InvalidArtistTransaction("Invalid Artist Transaction, try again")
+        case e: Exception =>
+          throw new TxSubmissionError(
+            "Issue Submitting Transaction To Node"
+          )
       }
     }
 
@@ -290,6 +294,8 @@ object createCollection {
 
       printAndSend(preMintTokenTx, "Premint Token Mint Tx")
       preMintToken = preMintTokenTx.getOutputsToSpend.get(0).getTokens.get(0)
+
+
 
       if (whitelistAccepted && whitelistTokenAmount != -1) {
         val whitelistTokenTx: SignedTransaction = createTokenWithCondition(

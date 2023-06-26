@@ -4,22 +4,7 @@ import AVL.Export.AVLExportTester.issuanceTree
 import AVL.IssuerBox.IssuerHelpersAVL
 import AVL.NFT.IssuanceAVLHelpers
 import AVL.utils.avlUtils
-import configs.{
-  AVLJsonHelper,
-  Collection,
-  CollectionEncoder,
-  Data,
-  FrontendFile,
-  SignedTransactionJson,
-  SignedTransactionJsonParser,
-  apiResp,
-  collectionEncoderHelper,
-  collectionParser,
-  conf,
-  frontendRespParser,
-  masterMeta,
-  serviceOwnerConf
-}
+import configs.{AVLJsonHelper, Collection, CollectionEncoder, Data, FrontendFile, SignedTransactionJson, SignedTransactionJsonParser, apiResp, collectionEncoderHelper, collectionParser, conf, frontendRespParser, masterMeta, serviceOwnerConf}
 import initialize.{InitializeHelper, encoderHelper}
 
 import javax.inject._
@@ -28,24 +13,7 @@ import io.circe.Json
 import play.api.libs.circe.Circe
 import io.circe.syntax.EncoderOps
 import play.api.libs.json.JsValue
-import utils.{
-  ArtistTxError,
-  CoinGekoAPIError,
-  DataBaseError,
-  InvalidAddress,
-  InvalidArtistTransaction,
-  InvalidCollectionJsonFormat,
-  InvalidCollectionSize,
-  InvalidMetadata,
-  InvalidNftFee,
-  InvalidPaymentToken,
-  InvalidPremintSetting,
-  InvalidRoyalty,
-  InvalidTimeStamp,
-  InvalidTransactionB64,
-  InvalidWhitelistSetting,
-  explorerApi
-}
+import utils.{ArtistTxError, CoinGekoAPIError, DataBaseError, InvalidAddress, InvalidArtistTransaction, InvalidCollectionJsonFormat, InvalidCollectionSize, InvalidMetadata, InvalidNftFee, InvalidPaymentToken, InvalidPremintSetting, InvalidRoyalty, InvalidTimeStamp, InvalidTransactionB64, InvalidWhitelistSetting, TxSubmissionError, explorerApi}
 
 import scala.concurrent.Future
 import javax.inject._
@@ -157,6 +125,12 @@ class HomeController @Inject() (cc: ControllerComponents)(implicit
             BadRequest(
               new apiResp(
                 "improper artist transaction submitted, please try again or contract support"
+              ).toJsonString
+            ).as("application/json")
+          case e: TxSubmissionError =>
+            BadRequest(
+              new apiResp(
+                e.getMessage
               ).toJsonString
             ).as("application/json")
           case e: DataBaseError =>
