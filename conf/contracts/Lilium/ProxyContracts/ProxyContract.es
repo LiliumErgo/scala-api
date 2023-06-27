@@ -53,9 +53,9 @@
                 // if box has tokens it must go to buyer
                 val validTokenTransfer: Boolean = {
                     if(SELF.tokens.size > 0){
-                        OUTPUTS.map { (o: Box) =>
-                            if ((o.tokens == SELF.tokens) && (o.propositionBytes == buyerPK.propBytes)) 1L else 0L
-                        }.fold(0L, { (a: Long, b: Long) => a + b }) >= 1L
+                        OUTPUTS.exists { (o: Box) =>
+                            (o.tokens == SELF.tokens) && (o.propositionBytes == buyerPK.propBytes)
+                        }
                     } else{
                       true
                     }
