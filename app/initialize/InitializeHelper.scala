@@ -112,7 +112,7 @@ object InitializeHelper {
     collectionFromJson.collectionMaxSize >= 1 &&
     collectionFromJson.priceOfNFTNanoErg != 0 &&
     collectionFromJson.paymentTokenID != null &&
-    collectionFromJson.paymentTokenAmount > 0 &&
+    collectionFromJson.paymentTokenAmount != 0 &&
     collectionFromJson.premintTokenAmount != 0
   }
 
