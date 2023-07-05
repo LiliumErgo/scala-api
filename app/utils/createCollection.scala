@@ -295,8 +295,6 @@ object createCollection {
       printAndSend(preMintTokenTx, "Premint Token Mint Tx")
       preMintToken = preMintTokenTx.getOutputsToSpend.get(0).getTokens.get(0)
 
-
-
       if (whitelistAccepted && whitelistTokenAmount != -1) {
         val whitelistTokenTx: SignedTransaction = createTokenWithCondition(
           exp.getUnspentBoxFromMempool(initTxnBoxes(4).boxId),
