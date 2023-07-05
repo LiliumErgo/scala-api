@@ -8,25 +8,23 @@
     // Author: mgpai22@github.com
     // Auditor: lucagdangelo@github.com
 
-
     // ===== Box Registers ===== //
     // R4: Int => Collection Standard Version
     // R5: Coll[Coll[Byte]] => Collection Info
     // R6: Coll[(Coll[Byte], Coll[Byte]) => Collection Socials
     // R7: Long => Minting Expiry Timestamp in MS
     // R8: Coll[(Coll[Byte], Coll[Byte])] => Additional information
-    // R9: Long => Amount Collection Tokens
+    // R9: Long => Amount of Collection Tokens
 
     // ===== Compile Time Constants ===== //
-    // _TxOperatorPK: SigmaProp
+    // _txOperatorPK: SigmaProp
 
     // ===== Context Extension Variables ===== //
-   val CollectionIssuanceContractBytes: Coll[Byte] = getVar[Coll[Byte]](0).get
+    val collectionIssuanceContractBytes: Coll[Byte] = getVar[Coll[Byte]](0).get
+    
+    val nftBox = (OUTPUTS(0).tokens(0) == (SELF.id, SELF.R9[Long].get))
+    val properOutput = (OUTPUTS(0).propositionBytes == collectionIssuanceContractBytes)
 
-
-   val nftBox = OUTPUTS(0).tokens(0) == (SELF.id, SELF.R9[Long].get)
-   val properOutput = OUTPUTS(0).propositionBytes == CollectionIssuanceContractBytes
-
-   sigmaProp(nftBox && properOutput) && _TxOperatorPK
+    sigmaProp(nftBox && properOutput) && _txOperatorPK
 
 }

@@ -60,6 +60,9 @@ object LiliumContracts extends Enum[LiliumContracts] {
   case object CollectionIssuance extends NFTBoxGuardScriptContract
   case object SingletonIssuer extends NFTBoxGuardScriptContract
   case object SingletonIssuance extends NFTBoxGuardScriptContract
+  case object WhitelistIssuer extends NFTBoxGuardScriptContract
+  case object PreMintIssuer extends NFTBoxGuardScriptContract
+  case object SaleLP extends NFTBoxGuardScriptContract
   case object AVLdebug extends NFTBoxGuardScriptContract
   case object ProxyContract extends ProxyContractBoxGuardScriptContract
 }
@@ -76,7 +79,7 @@ sealed trait ProxyContract extends LiliumContracts {
 
 //<editor-fold desc="Detailed Contract Types">
 /** // ===== Detailed Level Contracts =====
-  */
+ */
 sealed trait NFTBoxGuardScriptContract extends NFTContract {
   override val contractType: ContractType = ContractTypes.BoxGuardScript
 }
@@ -88,7 +91,7 @@ sealed trait ProxyContractBoxGuardScriptContract extends ProxyContract {
 
 //<editor-fold desc="Contract Type Enum">
 /** Describes the different contract types as Enums
-  */
+ */
 sealed trait ContractType extends EnumEntry { val plural: String }
 
 object ContractTypes extends Enum[ContractType] {

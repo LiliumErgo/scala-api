@@ -13,9 +13,11 @@ GET     /message                    controllers.AsyncController.message
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 GET /serviceConf controllers.HomeController.getServiceConf
+GET /getContracts controllers.HomeController.getContracts
 
 POST  /postJson   controllers.HomeController.postJson()
 POST  /submitCollection   controllers.HomeController.submitCollection()
+POST  /submitSignedTransaction   controllers.HomeController.submitSignedTransaction()
 POST /generateCollectionIssuerHex controllers.HomeController.generateCollectionIssuerHex()
 POST /validateCollection controllers.HomeController.validateCollection()
 

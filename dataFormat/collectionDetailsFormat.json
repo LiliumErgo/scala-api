@@ -16,9 +16,20 @@
     "amount": 5
   }],
   "saleStartTimestamp": 1676936502762,
-  "saleEndTimestamp": -1,
+  "saleEndTimestamp": 1876936502762,
   "mintingExpiry": -1,
   "collectionMaxSize": 10,
   "priceOfNFTNanoErg": 1000000,
-  "returnCollectionTokensToArtist": false
+  "paymentTokenAmount": 10,
+  "paymentTokenID": "",
+  "returnCollectionTokensToArtist": false,
+  "whitelistAccepted": true,
+  "whitelistBypass": true,
+  "premintAccepted": true,
+  "paymentTokenAccepted": false,
+  "ergAccepted": true,
+  "whitelistTokenAmount": 6,
+  "premintTokenAmount": 6,
+  "usePool": false,
+  "amountLP": -1
 }

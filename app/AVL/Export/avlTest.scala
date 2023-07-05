@@ -2,7 +2,7 @@ package AVL.Export
 
 import configs.frontendRespParser
 import contracts.LiliumContracts
-import initialize.initializeHelper
+import initialize.InitializeHelper
 import org.ergoplatform.appkit.BlockchainContext
 import utils.{Client, ContractCompile}
 
@@ -20,7 +20,7 @@ object metaTest extends App {
 object txTest extends App {
 
   val jsonBody = frontendRespParser.read("frontendData.json")
-  initializeHelper.main(
+  InitializeHelper.main(
     jsonBody.transactionId,
     jsonBody.userPK,
     jsonBody.collectionDetails,

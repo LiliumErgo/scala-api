@@ -8,19 +8,46 @@
     // Author: mgpai22@github.com
     // Auditor: lucagdangelo@github.com
 
-    // ===== Box Registers ===== //
-    // Tokens: Singleton Token
+    // ===== Box Contents ===== //
+    // Tokens
+    // 1. (SingletonTokenId, 1 | 2)
 
     // ===== Compile Time Constants ===== //
-    // _SingletonToken: Coll[Byte]
-    // _TxOperatorPK: SigmaProp
+    // _singletonToken: Coll[Byte]
+    // _usePool: Boolean
+    // _totalFees: Long
+    // _txOperatorPK: SigmaProp
 
     // ===== Context Extension Variables ===== //
-    val StateBoxContractBytes: Coll[Byte] = getVar[Coll[Byte]](0).get
+    val singletonIssuanceContractBytes: Coll[Byte] = getVar[Coll[Byte]](0).get
+    val properOutput: Boolean = OUTPUTS(0).propositionBytes == singletonIssuanceContractBytes
 
-    val properOutput = OUTPUTS(0).propositionBytes == StateBoxContractBytes
-    val properTokenTransfer = (OUTPUTS(0).tokens(0) == (_SingletonToken, 1L)) && (SELF.tokens(0)._1  == _SingletonToken)
+    val properTokenTransfer: Boolean = {
 
-    sigmaProp(properOutput && properTokenTransfer) && _TxOperatorPK
+        if (_usePool) {
+
+            val saleLPContractBytes: Coll[Byte] = getVar[Coll[Byte]](1).get
+            val properSaleLP: Boolean = OUTPUTS(1).propositionBytes == saleLPContractBytes
+
+            allOf(Coll(
+                (OUTPUTS(0).tokens(0) == (_singletonToken, 1L)), // state box
+                (OUTPUTS(1).value == _totalFees),
+                properSaleLP,
+                (OUTPUTS(1).tokens(0) == (_singletonToken, 1L)), // sale lp box
+                (SELF.tokens(0)._1  == _singletonToken)
+            ))
+
+        } else {
+
+            allOf(Coll(
+                (OUTPUTS(0).tokens(0) == (_singletonToken, 1L)),
+                (SELF.tokens(0)._1  == _singletonToken)
+            ))
+
+        }
+
+    }
+
+    sigmaProp(properOutput && properTokenTransfer) && _txOperatorPK
 
 }
