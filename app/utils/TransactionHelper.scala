@@ -146,7 +146,10 @@ class TransactionHelper(
   }
 
   private def getAmount(amount: Double): Long = {
-    (amount * Parameters.OneErg).toLong
+    val bigAmount = BigDecimal(amount)
+    val result = (bigAmount * BigDecimal(Parameters.OneErg))
+      .setScale(0, BigDecimal.RoundingMode.HALF_UP)
+    result.toLong
   }
   def sendToken(
       receiver: List[Address],
@@ -263,7 +266,8 @@ class TransactionHelper(
         fee
       )
     } else {
-      unsignedTransaction = this.buildUnsignedTransaction(inBox, List(outBox), fee)
+      unsignedTransaction =
+        this.buildUnsignedTransaction(inBox, List(outBox), fee)
     }
 
     this.signTransaction(unsignedTransaction)
