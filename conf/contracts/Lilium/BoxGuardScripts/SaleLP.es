@@ -52,7 +52,23 @@
             val validSelfRecreation: Boolean = {
 
                 if (isLastSale) {
-                    true
+
+                    val validStateSingletonTokenBurn: Boolean = {
+
+                        val outputTokenAmount: Long = OUTPUTS.flatMap({ (output: Box) =>
+
+                            output.tokens.map({ (t: (Coll[Byte], Long)) =>
+                                if (t._1 == stateSingletonTokenId) t._2 else 0L
+                            })
+
+                        }).fold(0L, { (acc: Long, curr: Long) => acc + curr })
+
+                        (outputTokenAmount < 2L)
+
+                    }
+
+                    validStateSingletonTokenBurn
+
                 } else {
 
                     val saleLPOUT: Box = OUTPUTS(4)
