@@ -2,19 +2,12 @@ name := """Lilium_Project_Initialization_Bot"""
 organization := "com.lilium"
 version := "1.0.0"
 
-lazy val NexusReleases = "Sonatype Releases".at(
-  "https://s01.oss.sonatype.org/content/repositories/releases"
-)
-
-lazy val NexusSnapshots = "Sonatype Snapshots".at(
-  "https://s01.oss.sonatype.org/content/repositories/snapshots"
-)
-
 resolvers ++= Seq(
-  NexusReleases,
-  NexusSnapshots,
-  Resolver.sonatypeRepo("public"),
-  Resolver.sonatypeRepo("snapshots")
+  "Sonatype Releases" at "https://s01.oss.sonatype.org/content/repositories/releases",
+  "Sonatype Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots",
+  "ImageJ Public" at "https://maven.imagej.net/content/repositories/public/",
+  "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases",
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 )
 
 resolvers ++= Seq(
